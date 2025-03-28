@@ -4,16 +4,25 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node output/index.js",
+    "dev": "tsc-watch --onSuccess \"npm start\""
   },
   "author": "",
   "license": "ISC",
   "devDependencies": {
+    "@types/cors": "^2.8.17",
+    "@types/express": "^5.0.1",
+    "tsc-watch": "^6.2.1",
     "typescript": "^5.8.2"
   },
   "dependencies": {
+    "@apollo/server": "^4.11.3",
+    "body-parser": "^2.2.0",
+    "cors": "^2.8.5",
     "dotenv": "^16.4.7",
     "express": "^4.21.2",
+    "graphql": "^16.10.0",
     "morgan": "^1.10.0",
     "nodemon": "^3.1.9"
   }
