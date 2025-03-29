@@ -8,26 +8,23 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
         step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
 };
-var __importDefault = (this && this.__importDefault) || function (mod) {
-    return (mod && mod.__esModule) ? mod : { "default": mod };
-};
 Object.defineProperty(exports, "__esModule", { value: true });
-const express_1 = __importDefault(require("express"));
-const dotenv_1 = __importDefault(require("dotenv"));
-// import UserService from "./services/user";
-dotenv_1.default.config();
-function init() {
+const server_1 = require("@apollo/server");
+function createApolloserver() {
     return __awaiter(this, void 0, void 0, function* () {
-        const app = (0, express_1.default)();
-        const PORT = Number(process.env.PORT) || 8000;
-        app.use(express_1.default.json());
-        app.get("/", (req, res) => {
-            res.json({ message: "Server is up and running" });
+        const server = new server_1.ApolloServer({
+            typeDefs: ` 
+        type Query {}
+        type Mutation {}
+        `,
+            resolvers: {
+                Query: {},
+                Mutation: {}
+            },
         });
-        // app.use(
-        //   "/graphql",
-        //   expressMiddleware(await createApolloGraphqlServer()));
-        app.listen(PORT, () => console.log(`Server started at PORT:${PORT}`));
+        // Start Apollo Server
+        yield server.start();
+        return server;
     });
 }
-init();
+exports.default = createApolloserver;

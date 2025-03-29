@@ -1,88 +1,25 @@
-import express, { Express } from 'express'
-import http from 'http'
-import cors from 'cors'
-import dotenv from 'dotenv'
-import { ApolloServer } from '@apollo/server'
-import { expressMiddleware } from '@apollo/server/express4'
-import {prismaClient} from './lib/db'
+import express from "express";
+import { expressMiddleware } from "@apollo/server/express4";
+import createApolloserver from "./graphql";
+import dotenv from "dotenv";
+// import UserService from "./services/user";
+dotenv.config();
 
-dotenv.config()
+async function init() {
+  const app = express();
+  const PORT = Number(process.env.PORT) || 8000;
 
-async function startServer() {
-  const app: Express = express()
-  const PORT = process.env.PORT || 3000
+  app.use(express.json());
 
-  // Apollo Server
-  const server = new ApolloServer({
-    typeDefs: `
-    type Query {
-      hello: String
-    }
-    type Mutation {
-      createUser(firstName: String!,lastName:String, email: String!, password:String!): Boolean
-    }  
-    `,
-    resolvers: {
-      Query: {
-        hello: () => `Hello World`
-      },
-      Mutation: {
-        createUser: async (_, { firstName, lastName, email, password }:{
-          firstName: string
-          lastName: string
-          email: string
-          password: string
-        }) => {
-          await prismaClient.user.create({
-            data: {
-              firstName,
-              lastName,
-              email,
-              password,
-              salt: 'salt',
-            }
-          });
-          return true
-        }
-      }
-    },
-  })
+  app.get("/", (req, res) => {
+    res.json({ message: "Server is up and running" });
+  });
 
-  // Create HTTP server
-  const httpServer = http.createServer(app)
+  // app.use(
+  //   "/graphql",
+  //   expressMiddleware(await createApolloGraphqlServer()));
 
-  // Start Apollo Server
-  await server.start()
-
-  // Middleware
-  app.use(cors())
-  app.use(express.json())
-
-  // Basic route
-  app.get('/', (req, res) => {
-    res.send('Express + Apollo Server is Running')
-  })
-
-  // GraphQL endpoint
-  app.use(
-    '/graphql',
-    expressMiddleware(server, {
-      context: async () => {
-        return {};
-      },
-    })
-  );
-  
-
-  // Start server
-  await new Promise<void>((resolve) => 
-    httpServer.listen({ port: PORT }, () => {
-      console.log(`🚀 Server running on port ${PORT}`)
-      resolve()
-    })
-  )
+  app.listen(PORT, () => console.log(`Server started at PORT:${PORT}`));
 }
 
-startServer().catch((err) => {
-  console.error('Failed to start server', err)
-})
+init();
