@@ -4,6 +4,7 @@ import cors from 'cors'
 import dotenv from 'dotenv'
 import { ApolloServer } from '@apollo/server'
 import { expressMiddleware } from '@apollo/server/express4'
+import {prismaClient} from './lib/db'
 
 dotenv.config()
 
@@ -16,10 +17,33 @@ async function startServer() {
     typeDefs: `
     type Query {
       hello: String
-    }`,
+    }
+    type Mutation {
+      createUser(firstName: String!,lastName:String, email: String!, password:String!): Boolean
+    }  
+    `,
     resolvers: {
       Query: {
         hello: () => `Hello World`
+      },
+      Mutation: {
+        createUser: async (_, { firstName, lastName, email, password }:{
+          firstName: string
+          lastName: string
+          email: string
+          password: string
+        }) => {
+          await prismaClient.user.create({
+            data: {
+              firstName,
+              lastName,
+              email,
+              password,
+              salt: 'salt',
+            }
+          });
+          return true
+        }
       }
     },
   })
@@ -40,11 +64,15 @@ async function startServer() {
   })
 
   // GraphQL endpoint
-  // app.use('/graphql', expressMiddleware(server, {
-  //   context: async ({ req }) => ({
-  //     token: req.headers.token
-  //   })
-  // }))
+  app.use(
+    '/graphql',
+    expressMiddleware(server, {
+      context: async () => {
+        return {};
+      },
+    })
+  );
+  
 
   // Start server
   await new Promise<void>((resolve) => 
