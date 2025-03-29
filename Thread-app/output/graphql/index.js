@@ -10,16 +10,20 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 const server_1 = require("@apollo/server");
+const users_1 = require("./services/users");
 function createApolloserver() {
     return __awaiter(this, void 0, void 0, function* () {
         const server = new server_1.ApolloServer({
             typeDefs: ` 
-        type Query {}
-        type Mutation {}
+        type Query {
+         ${users_1.User.queries}
+        }
+        type Mutation {
+        ${users_1.User.mutations}
         `,
             resolvers: {
-                Query: {},
-                Mutation: {}
+                Query: Object.assign({}, users_1.User.resolvers.queries),
+                Mutation: Object.assign({}, users_1.User.resolvers.mutations)
             },
         });
         // Start Apollo Server

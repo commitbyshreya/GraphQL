@@ -17,7 +17,7 @@ async function init() {
 
   // app.use(
   //   "/graphql",
-  //   expressMiddleware(await createApolloGraphqlServer()));
+  //   expressMiddleware(await createApolloserver()));
 
   app.listen(PORT, () => console.log(`Server started at PORT:${PORT}`));
 }
