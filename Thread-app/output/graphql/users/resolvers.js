@@ -8,27 +8,17 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
         step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
 };
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
 Object.defineProperty(exports, "__esModule", { value: true });
-const server_1 = require("@apollo/server");
-const users_1 = require("./users");
-function createApolloserver() {
-    return __awaiter(this, void 0, void 0, function* () {
-        const server = new server_1.ApolloServer({
-            typeDefs: ` 
-        type Query {
-         ${users_1.User.queries}
-        }
-        type Mutation {
-        ${users_1.User.mutations}
-        `,
-            resolvers: {
-                Query: Object.assign({}, users_1.User.resolvers.queries),
-                Mutation: Object.assign({}, users_1.User.resolvers.mutations)
-            },
-        });
-        // Start Apollo Server
-        yield server.start();
-        return server;
-    });
-}
-exports.default = createApolloserver;
+exports.resolvers = void 0;
+const userService_1 = __importDefault(require("../../services/userService"));
+const queries = {};
+const mutations = {
+    createUser: (_, payload) => __awaiter(void 0, void 0, void 0, function* () {
+        const result = yield userService_1.default.createUser(payload);
+        return result.id;
+    })
+};
+exports.resolvers = { queries, mutations };
